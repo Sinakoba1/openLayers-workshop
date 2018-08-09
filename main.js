@@ -4,6 +4,7 @@ import Map from 'ol/Map';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import View from 'ol/View';
+import sync from 'ol-hashed';
 
 new Map({
     target: 'map-container',
@@ -21,3 +22,4 @@ new Map({
     })
      
 });
+sync(map); 
