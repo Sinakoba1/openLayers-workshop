@@ -7,6 +7,7 @@ import View from 'ol/View';
 import sync from 'ol-hashed'; 
 import DragAndDrop from 'ol/interaction/DragAndDrop';
 import Modify from 'ol/interaction/Modify';
+import Draw from 'ol/interaction/Draw';
 
 const source = new VectorSource();
 const layer = new VectorLayer({
@@ -26,6 +27,10 @@ map.addInteraction(new DragAndDrop({
     formatConstructors: [GeoJSON]
   }));
   map.addInteraction(new Modify({
-      source:source
+      source: source
+  }));
+  map.addInteraction(new Draw({
+      type: 'Polygon',
+      source: source
   }));
 sync(map); 
