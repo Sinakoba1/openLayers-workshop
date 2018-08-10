@@ -4,22 +4,24 @@ import Map from 'ol/Map';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import View from 'ol/View';
-import sync from 'ol-hashed';
+import sync from 'ol-hashed'; 
+import DragAndDrop from 'ol/interaction/DragAndDrop';
 
-new Map({
+const source = new VectorSource();
+const layer = new VectorLayer({
+    source: source
+});
+
+const map = new Map({
     target: 'map-container',
-    layers: [
-        new VectorLayer({
-            source: new VectorSource({
-                format: new GeoJSON(),
-                url: './data/countries.json'
-            })
-        })
-    ],
     view: new View({
         center: [0, 0],
         zoom: 2
-    })
-     
+    })   
 });
+map.addLayer(layer);
+map.addInteraction(new DragAndDrop({
+    source: source,
+    formatConstructors: [GeoJSON]
+  }));
 sync(map); 
