@@ -14,7 +14,16 @@ const source = new VectorSource();
 const layer = new VectorLayer({
     source: source
 });
-
+const clear = document.getElementById('clear');
+clear.addEventListener('click', function(){
+    source.clear();
+});
+const format = new GeoJSON({featureProjection: 'EPSG:3857'});
+const download = document.getElementById('download');
+source.on('change', function() {
+    const features = source.getFeatures();
+    const json = 'data:text/json;charset=utf-8,' + json;
+});
 const map = new Map({
     target: 'map-container',
     view: new View({
@@ -22,6 +31,7 @@ const map = new Map({
         zoom: 2
     })   
 });
+
 map.addLayer(layer);
 map.addInteraction(new DragAndDrop({
     source: source,
