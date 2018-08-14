@@ -9,11 +9,23 @@ import DragAndDrop from 'ol/interaction/DragAndDrop';
 import Modify from 'ol/interaction/Modify';
 import Draw from 'ol/interaction/Draw';
 import Snap from 'ol/interaction/Snap';
-
+import {Fill, Stroke, Style} from 'ol/style';
+import {getArea} from 'ol/sphere';
+import colormap from 'colormap'; 
 const source = new VectorSource();
 const layer = new VectorLayer({
-    source: source
-});
+    source: source,
+    style: function(feature) {
+        return new Style({
+            fill: new Fill({
+                color: getColor(feature)
+            }),
+            stroke: new Stroke({
+                color: 'rgba(255,255,255,0.8)'
+            })
+        });
+    }
+}); 
 const clear = document.getElementById('clear');
 clear.addEventListener('click', function(){
     source.clear();
@@ -21,9 +33,9 @@ clear.addEventListener('click', function(){
 const format = new GeoJSON({featureProjection: 'EPSG:3857'});
 const download = document.getElementById('download');
 source.on('change', function() {
-    const features = source.getFeatures();
-    const json = 'data:text/json;charset=utf-8,' + json;
-});
+     const features = source.getFeatures();
+     const json = format.writeFeatures(features);
+     download.href = 'data:text/json;charset=utf-8,' + json; }); 
 const map = new Map({
     target: 'map-container',
     view: new View({
@@ -31,7 +43,22 @@ const map = new Map({
         zoom: 2
     })   
 });
-
+const min = 1e8; // the smallest area
+const max = 2e13; // the biggest area
+const steps = 50;
+const ramp = colormap({
+    colormap: 'blackbody',
+    nshades: steps
+});
+function clamp(value, low, high) {
+    return Math.max(low, Math.min(value, high));
+}
+function getColor(feature) {
+    const area = getArea(feature.getGeometry());
+    const f = Math.pow(clamp((area - min) / (max - min), 0, 1), 1 / 2);
+    const index = Math.round(f * (steps - 1));
+    return ramp[index];
+} 
 map.addLayer(layer);
 map.addInteraction(new DragAndDrop({
     source: source,
